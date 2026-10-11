@@ -212,3 +212,5 @@ Visual Dashboard: Display health trends and prediction history using interactive
 Wearable Integration: Explore integration with smartwatches and glucose monitoring devices.
 
 Security and Testing: Strengthen data protection and expand automated testing using Selenium.
+
+Improve diabetes risk prediction and health monitoring features.
