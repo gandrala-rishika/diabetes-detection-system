@@ -200,3 +200,5 @@ Tech Stack:
  Python, TensorFlow, Keras, Scikit-learn, Imbalanced-learn, Flask, SQLAlchemy, Pandas, NumPy, Matplotlib, Seaborn, Jupyter
  
 Project documentation updated.
+### Future Improvements
+- Improve the user interface and experience.
