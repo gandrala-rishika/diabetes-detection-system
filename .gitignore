@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Jupyter and macOS
+.ipynb_checkpoints/
+.DS_Store
+
+# IDE
+.vscode/
+
+# Generated archive
+diabetes-flask.tar
+
+# Build outputs
+springboot-backend/target/
+*.log
+instance/

@@ -1,0 +1,19 @@
+name: diabetes_cnn
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+    - tensorflow
+    - scikit-learn
+    - imbalanced-learn
+    - flask
+    - flask-sqlalchemy
+    - werkzeug
+    - pandas
+    - numpy
+    - matplotlib
+    - seaborn
+    - jupyter

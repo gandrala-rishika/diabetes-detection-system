@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Diabetes Prediction System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+<header>
+    <div class="logo">🩺</div>
+    <div>
+        <h1>Diabetes Prediction</h1>
+    </div>
+    <div class="header-right">
+        <span class="welcome-text">👤 {{ username }}</span>
+        <a href="/history" class="btn-history">📊 My History</a>
+        <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+</header>
+<main>
+    <div class="hero">
+        <h2>Predict Diabetes Risk<br/><em>Powered by Deep Learning</em></h2>
+        <p>Enter patient medical parameters below. Our model analyzes 8 clinical features to predict diabetes risk.</p>
+    </div>
+    <div class="card" id="form-section">
+        <div class="card-title">🔬 Patient Medical Parameters</div>
+        <div class="grid">
+            <div class="field">
+                <label>Pregnancies <span>(count)</span></label>
+                <input type="number" id="Pregnancies" placeholder="e.g. 2" min="0" max="20"/>
+                <div class="ranges">Range: 0 – 17</div>
+            </div>
+            <div class="field">
+                <label>Glucose <span>(mg/dL)</span></label>
+                <input type="number" id="Glucose" placeholder="e.g. 120" min="0" max="300"/>
+                <div class="ranges">Normal: 70–99 | Diabetic: &gt;126</div>
+            </div>
+            <div class="field">
+                <label>Blood Pressure <span>(mmHg)</span></label>
+                <input type="number" id="BloodPressure" placeholder="e.g. 72" min="0" max="200"/>
+                <div class="ranges">Normal: 60–80</div>
+            </div>
+            <div class="field">
+                <label>Skin Thickness <span>(mm)</span></label>
+                <input type="number" id="SkinThickness" placeholder="e.g. 20" min="0" max="100"/>
+                <div class="ranges">Triceps fold thickness</div>
+            </div>
+            <div class="field">
+                <label>Insulin <span>(µU/mL)</span></label>
+                <input type="number" id="Insulin" placeholder="e.g. 80" min="0" max="1000"/>
+                <div class="ranges">2-hr serum insulin</div>
+            </div>
+            <div class="field">
+                <label>BMI <span>(kg/m²)</span></label>
+                <input type="number" id="BMI" placeholder="e.g. 28.5" min="0" max="80" step="0.1"/>
+                <div class="ranges">Normal: 18.5–24.9</div>
+            </div>
+            <div class="field">
+                <label>Diabetes Pedigree</label>
+                <input type="number" id="DiabetesPedigreeFunction" placeholder="e.g. 0.47" min="0" max="3" step="0.001"/>
+                <div class="ranges">Family history score</div>
+            </div>
+            <div class="field">
+                <label>Age <span>(years)</span></label>
+                <input type="number" id="Age" placeholder="e.g. 35" min="1" max="120"/>
+                <div class="ranges">Range: 21 – 81</div>
+            </div>
+        </div>
+        <button class="btn-predict" onclick="runPrediction()" id="predict-btn">
+             Analyze 
+        </button>
+    </div>
+    <div class="card" id="result">
+        <div class="card-title">📊 Prediction Result</div>
+        <div class="result-header">
+            <div class="result-icon" id="result-icon"></div>
+            <div>
+                <div class="result-title" id="result-title"></div>
+                <div class="result-sub" id="result-sub"></div>
+            </div>
+        </div>
+        <div class="meter-wrap">
+            <div class="meter-label">
+                <span>Diabetes Probability</span>
+                <span id="prob-text"></span>
+            </div>
+            <div class="meter-bar">
+                <div class="meter-fill" id="meter" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-val" id="stat-prob"></div>
+                <div class="stat-lbl">Probability</div>
+            </div>
+            <div class="stat">
+                <div class="stat-val" id="stat-risk"></div>
+                <div class="stat-lbl">Risk Level</div>
+            </div>
+            <div class="stat">
+                <div class="stat-val">CNN</div>
+                <div class="stat-lbl">Model Used</div>
+            </div>
+        </div>
+        <div class="advice-box" id="advice-box"></div>
+        <button class="btn-reset" onclick="resetForm()">↺ New Prediction</button>
+    </div>
+</main>
+<footer>
+    <p>Built by <strong>N. Kavya Sri · Ch. Kavya Sri</strong> · CNN Diabetes Prediction · Pima Indian Dataset</p>
+</footer>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

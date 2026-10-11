@@ -1,0 +1,27 @@
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: diabetes-flask
+    ports:
+      - "5001:5001"
+    environment:
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:?Set FLASK_SECRET_KEY in .env}
+      TF_CPP_MIN_LOG_LEVEL: "3"
+    volumes:
+      - ./instance:/app/instance
+    restart: unless-stopped
+
+  springboot:
+    build:
+      context: ./springboot-backend
+      dockerfile: Dockerfile
+    container_name: diabetes-springboot
+    ports:
+      - "8082:8081"
+    environment:
+      FLASK_BASE_URL: http://flask:5001
+    depends_on:
+      - flask
+    restart: unless-stopped

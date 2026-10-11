@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My History — DiabetesAI</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='history.css') }}"/>
+</head>
+<body>
+<header>
+    <div class="logo">🩺</div>
+    <div>
+        <h1>Diabetes Prediction</h1>
+    </div>
+    <div class="header-right">
+        <span class="welcome-text">👤 {{ username }}</span>
+        <a href="/predict-page" class="btn-history">⚡ New Prediction</a>
+        <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+</header>
+<main>
+    <div class="hero">
+        <h2>Your Prediction <em>History</em></h2>
+        <p>Track your diabetes risk over time and compare previous results with current ones.</p>
+    </div>
+
+    {% if predictions %}
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="summary-val">{{ predictions|length }}</div>
+            <div class="summary-lbl">Total Tests</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-val" style="color: var(--danger);">
+                {{ predictions|selectattr('result', 'equalto', 'Diabetic')|list|length }}
+            </div>
+            <div class="summary-lbl">Diabetic Results</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-val">
+                {{ predictions|selectattr('result', 'equalto', 'Non-Diabetic')|list|length }}
+            </div>
+            <div class="summary-lbl">Non-Diabetic Results</div>
+        </div>
+    </div>
+
+    <!-- TREND CHART -->
+    {% if predictions|length > 1 %}
+   <div class="trend-box">
+    <div class="trend-title">📈 Risk Trend Over Time</div>
+    <canvas id="trendChart"></canvas>
+   </div>
+    {% endif %}
+
+    <!-- PREDICTIONS LIST -->
+    <div class="card">
+        <div class="card-title">📋 Detailed Analysis</div>
+        <div class="history-list">
+            {% for p in predictions %}
+            <div class="history-item {% if p.result == 'Diabetic' %}diabetic{% else %}non-diabetic{% endif %}">
+
+                <!-- Header -->
+                <div class="history-header">
+                    <div class="history-result">
+                        <span class="result-badge {% if p.result == 'Diabetic' %}badge-danger{% else %}badge-success{% endif %}">
+                            {{ p.result }}
+                        </span>
+                        <span class="risk-badge">{{ p.risk_level }}</span>
+                    </div>
+                    <div class="history-date">
+{{ p.created_at.replace(tzinfo=utc).astimezone(ist).strftime('%d %b %Y, %I:%M %p') }}                    </div>
+                </div>
+
+                <!-- Probability Bar -->
+                <div class="history-prob">
+                    <div class="prob-bar-wrap">
+                        {% if p.probability > 60 %}
+                        <div class="prob-bar-fill high" style="width:{{ p.probability|int }}%;"></div>
+                        {% else %}
+                        <div class="prob-bar-fill" style="width:{{ p.probability|int }}%;"></div>
+                        {% endif %}
+                    </div>
+                    <span class="prob-val">{{ p.probability }}%</span>
+                </div>
+
+                <!-- Parameters -->
+                <div class="history-params">
+                    <span>🩸 Glucose: <strong>{{ p.glucose }}</strong></span>
+                    <span>⚖️ BMI: <strong>{{ p.bmi }}</strong></span>
+                    <span>👤 Age: <strong>{{ p.age|int }}</strong></span>
+                    <span>💓 BP: <strong>{{ p.blood_pressure }}</strong></span>
+                    <span>💉 Insulin: <strong>{{ p.insulin }}</strong></span>
+                    <span>🤰 Pregnancies: <strong>{{ p.pregnancies|int }}</strong></span>
+                </div>
+
+                <!-- Comparison with previous -->
+                {% if not loop.last %}
+                {% set prev = predictions[loop.index] %}
+                <div class="comparison-box">
+                    <div class="comparison-title">🔄 Changes vs Next Test</div>
+                    <div class="comparison-items">
+                        {% if p.glucose > prev.glucose %}
+                        <span class="comp-item comp-up">↑ Glucose +{{ "%.1f"|format(p.glucose - prev.glucose) }}</span>
+                        {% elif p.glucose < prev.glucose %}
+                        <span class="comp-item comp-down">↓ Glucose {{ "%.1f"|format(p.glucose - prev.glucose) }}</span>
+                        {% else %}
+                        <span class="comp-item comp-same">→ Glucose unchanged</span>
+                        {% endif %}
+
+                        {% if p.bmi > prev.bmi %}
+                        <span class="comp-item comp-up">↑ BMI +{{ "%.1f"|format(p.bmi - prev.bmi) }}</span>
+                        {% elif p.bmi < prev.bmi %}
+                        <span class="comp-item comp-down">↓ BMI {{ "%.1f"|format(p.bmi - prev.bmi) }}</span>
+                        {% else %}
+                        <span class="comp-item comp-same">→ BMI unchanged</span>
+                        {% endif %}
+
+                        {% if p.probability > prev.probability %}
+                        <span class="comp-item comp-up">↑ Risk +{{ "%.1f"|format(p.probability - prev.probability) }}%</span>
+                        {% elif p.probability < prev.probability %}
+                        <span class="comp-item comp-down">↓ Risk {{ "%.1f"|format(p.probability - prev.probability) }}%</span>
+                        {% else %}
+                        <span class="comp-item comp-same">→ Risk unchanged</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Advice -->
+                <div class="history-advice">💡 {{ p.advice }}</div>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- CAUTION BOX -->
+    <div class="caution-box">
+        <div class="caution-title">⚠️ Health Cautions & Recommendations</div>
+        <div class="caution-items">
+            {% set last = predictions[0] %}
+            {% if last.probability > 70 %}
+            <div class="caution-item">
+                <span class="icon">🚨</span>
+                <span><strong>Immediate Action Required:</strong> Your latest test shows very high diabetes risk. Please consult a doctor immediately and get HbA1c and fasting glucose tests done.</span>
+            </div>
+            {% elif last.probability > 50 %}
+            <div class="caution-item">
+                <span class="icon">⚠️</span>
+                <span><strong>High Risk Detected:</strong> Your risk level is above 50%. Schedule a doctor appointment soon for proper diagnosis.</span>
+            </div>
+            {% elif last.probability > 30 %}
+            <div class="caution-item">
+                <span class="icon">🔶</span>
+                <span><strong>Moderate Risk:</strong> You have some risk factors. Monitor your glucose levels regularly and maintain a healthy lifestyle.</span>
+            </div>
+            {% else %}
+            <div class="caution-item">
+                <span class="icon">✅</span>
+                <span><strong>Low Risk:</strong> Your current risk is low. Keep maintaining your healthy lifestyle!</span>
+            </div>
+            {% endif %}
+
+            {% if predictions|length > 1 %}
+            {% set first = predictions|last %}
+            {% if last.probability > first.probability %}
+            <div class="caution-item">
+                <span class="icon">📈</span>
+                <span><strong>Risk is Increasing:</strong> Your diabetes risk has increased since your first test. Take this seriously and make lifestyle changes immediately.</span>
+            </div>
+            {% elif last.probability < first.probability %}
+            <div class="caution-item">
+                <span class="icon">📉</span>
+                <span><strong>Risk is Decreasing:</strong> Great news! Your diabetes risk is reducing over time. Keep up the good work!</span>
+            </div>
+            {% else %}
+            <div class="caution-item">
+                <span class="icon">➡️</span>
+                <span><strong>Risk is Stable:</strong> Your risk level has not changed. Continue monitoring and focus on improving your diet and exercise.</span>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <div class="caution-item">
+                <span class="icon">🥗</span>
+                <span><strong>Diet:</strong> Reduce sugar intake, eat more vegetables and whole grains, avoid processed foods.</span>
+            </div>
+            <div class="caution-item">
+                <span class="icon">🏃</span>
+                <span><strong>Exercise:</strong> Aim for at least 30 minutes of physical activity every day. Walking, yoga and swimming are highly recommended.</span>
+            </div>
+            <div class="caution-item">
+                <span class="icon">🩺</span>
+                <span><strong>Regular Checkups:</strong> Get your blood glucose tested every 3-6 months even if you feel healthy.</span>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card empty-card">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No predictions yet</div>
+        <div class="empty-sub">Make your first prediction to see your history and analysis here.</div>
+        <a href="/predict-page" class="btn-predict" style="display:inline-block; width:auto; padding: 14px 32px; text-decoration:none; margin-top:20px;">
+            ⚡ Make First Prediction
+        </a>
+    </div>
+    {% endif %}
+
+</main>
+<footer>
+    <p>Built by <strong>N. Kavya Sri · Ch. Kavya Sri</strong> · CNN Diabetes Prediction · Pima Indian Dataset</p>
+</footer>
+<script src="{{ url_for('static', filename='history.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = [
+{% for p in predictions|reverse %}
+"{{ p.created_at.replace(tzinfo=utc).astimezone(ist).strftime('%d %b %I:%M %p') }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+];
+
+const data = [
+{% for p in predictions|reverse %}
+{{ p.probability }}{% if not loop.last %},{% endif %}
+{% endfor %}
+];
+
+new Chart(document.getElementById("trendChart"), {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Risk %",
+            data: data,
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 5
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>
