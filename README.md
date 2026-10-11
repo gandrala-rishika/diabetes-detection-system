@@ -214,3 +214,5 @@ Wearable Integration: Explore integration with smartwatches and glucose monitori
 Security and Testing: Strengthen data protection and expand automated testing using Selenium.
 
 Improve diabetes risk prediction and health monitoring features.
+
+Model Explainability: Integrate Explainable AI (XAI) techniques such as SHAP to identify the health parameters that contribute most to each prediction, making the model’s results easier to understand and interpret.
