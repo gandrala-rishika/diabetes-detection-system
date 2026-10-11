@@ -201,4 +201,14 @@ Tech Stack:
  
 Project documentation updated.
 ### Future Improvements
-- Improve the user interface and experience.
+Improved Prediction Accuracy: Enhance the model using better algorithms and more diverse datasets.
+
+Health Monitoring: Track glucose levels, BMI, and previous risk predictions over time.
+
+Personalized Recommendations: Provide lifestyle tips based on users' health information.
+
+Visual Dashboard: Display health trends and prediction history using interactive charts.
+
+Wearable Integration: Explore integration with smartwatches and glucose monitoring devices.
+
+Security and Testing: Strengthen data protection and expand automated testing using Selenium.
