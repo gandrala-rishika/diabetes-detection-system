@@ -198,3 +198,5 @@ Open browser: http://127.0.0.1:500
 
 Tech Stack:
  Python, TensorFlow, Keras, Scikit-learn, Imbalanced-learn, Flask, SQLAlchemy, Pandas, NumPy, Matplotlib, Seaborn, Jupyter
+ 
+Project documentation updated.
